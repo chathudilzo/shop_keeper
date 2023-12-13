@@ -1,6 +1,6 @@
 
 import 'package:hive/hive.dart';
-
+part 'item.g.dart';
 
 @HiveType(typeId: 0)
 class Item extends HiveObject{

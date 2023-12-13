@@ -40,7 +40,8 @@ dependencies:
   hive_flutter:
   hive_generator:
   intl: 
-  path_provider:  
+  path_provider:
+  build_runner:   
 
 dev_dependencies:
   flutter_test:
