@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shop_keeper/controllers/bill_controller.dart';
+import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
 import '../objects/bill.dart';
 
@@ -20,7 +22,9 @@ class _AllBillPageState extends State<AllBillPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    billController.fetchBills(date);
+    Future.microtask((){
+      billController.fetchBills(date);
+    });
   }
 
   @override
@@ -30,7 +34,34 @@ double height=MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 49, 49, 49),
-appBar: AppBar(),
+appBar: AppBar(
+  title: Text('All Bills $date'),
+  actions: [
+    IconButton(onPressed: (){
+     showDialog(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        content:  FutureBuilder(
+          future: Future.microtask(() => DateTime.now()),
+          builder: (context,snapshot){
+            return TimePickerSpinnerPopUp(
+          mode: CupertinoDatePickerMode.date,
+          initTime: DateTime.now(),
+          onChange: (dateTime){
+            setState(() {
+             
+              date=DateFormat.yMMMd().format(dateTime);
+              billController.fetchBills(date);
+              Navigator.pop(context);
+            });
+          },
+              );
+          },
+        ),
+      );
+     });
+    }, icon: Icon(Icons.date_range))
+  ],
+),
 body: 
 
         SizedBox(
@@ -51,7 +82,14 @@ body:
   
           
   
-            }else{
+            }else if(billController.todayBills.isEmpty){
+             return Center(
+              child: Text('No Bills To Show',style: TextStyle(color: Colors.white,fontSize: 25),),
+             );
+            }
+            
+            
+            else{
   
           
   

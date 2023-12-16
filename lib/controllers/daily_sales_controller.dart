@@ -6,6 +6,9 @@ import 'package:shop_keeper/objects/sell_item.dart';
 
 class DailySalesController extends GetxController{
   RxList<DailySales> allDailySalesList=<DailySales>[].obs;
+  RxBool isLoading=false.obs;
+  late DailySales dailySales;
+
 @override
   void onInit() {
     // TODO: implement onInit
@@ -58,6 +61,16 @@ final box=await Hive.openBox<DailySales>('daily_sales');
   }catch(error){
     print(error);
   }
+
+}
+
+Future<void> getDailySales(String date)async{
+  isLoading.value=true;
+if(allDailySalesList.isNotEmpty){
+  dailySales=allDailySalesList.firstWhere((dailySales) =>dailySales.salesData.isNotEmpty && dailySales.date==date,orElse: null);
+
+}
+isLoading.value=false;
 
 }
 }

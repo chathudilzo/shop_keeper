@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +9,7 @@ import 'package:shop_keeper/controllers/item_controller.dart';
 import 'package:shop_keeper/objects/bill.dart';
 import 'package:shop_keeper/objects/sell_item.dart';
 import 'package:shop_keeper/screens/all_bill_page.dart';
+import 'package:shop_keeper/screens/daily_sales_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +24,13 @@ BillController _billController=Get.find();
 
 var textControllers=<String,TextEditingController>{};
 
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _billController.fetchBills(DateFormat.yMMMd().format(DateTime.now()));
+  }
+
   @override
   Widget build(BuildContext context) {
     double width=MediaQuery.of(context).size.width;
@@ -34,13 +44,51 @@ var textControllers=<String,TextEditingController>{};
           }, icon: Icon(Icons.receipt)),
           IconButton(onPressed: (){
             calculateTotal();
-          }, icon: Icon(Icons.calculate))
+          }, icon: Icon(Icons.calculate)),
+          IconButton(onPressed: (){
+            Get.to(DailySalesPage());
+          }, icon: Icon(Icons.sell))
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 10,),
+            Obx((){
+              if(_billController.isLoading.value){
+                return CircularProgressIndicator();
+              }else{
+                return Card(
+              
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text('Total Sales: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                        Text(_billController.todaySummary.value.total.toStringAsFixed(2)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Total Income: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                        Text(_billController.todaySummary.value.income.toStringAsFixed(2)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Total Depth: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                        Text(_billController.todaySummary.value.depth.toStringAsFixed(2)),
+                      ],
+                    ),
+                    
+                  ],
+                ),
+              ),
+            );
+              }
+            } ),
             SizedBox(
               width: width,
               height: height*0.9,
@@ -152,29 +200,35 @@ var textControllers=<String,TextEditingController>{};
     print('Called');
     List<SellItem> sellItems=[];
 
-    for(final item in controller.itemList){
-      final textController=textControllers[item.name];
+    try{
+      for(final item in controller.itemList){
+        final textController=textControllers[item.name];
 
-    
-
-      final buyAmount=double.tryParse(textController!.text)??0;
-
-      if(buyAmount>0){
-        final sellItem=SellItem(item.name,item.kgPrice, item.unitPrice, buyAmount);
-        sellItems.add(sellItem);
-      }
       
-    }
-    if(sellItems.isNotEmpty){
-      final bill=Bill(DateFormat.yMMMd().format(DateTime.now()), sellItems, '', 'Paid',0);
-      print(bill);
+        if(textController?.text!=null && textController!.text.isNotEmpty){
+          
+          final buyAmount=double.tryParse(textController.text)??0;
 
-      _showBill(context,bill);
-    }
-    
-    for(SellItem sellItem in sellItems){
-        print('Name: ${sellItem.name},UnitPrice: ${sellItem.unitPrice} , KgPrice:${sellItem.kgPrice}  Buy Amount: ${sellItem.buyAmount}, Total: ${sellItem.itemTotal}');
+          if(buyAmount>0){
+            final sellItem=SellItem(item.name,item.kgPrice, item.unitPrice, buyAmount);
+            sellItems.add(sellItem);
+          }
+        }
+      
       }
+      if(sellItems.isNotEmpty){
+        final bill=Bill(DateFormat.yMMMd().format(DateTime.now()), sellItems, '', 'Paid',0);
+        print(bill);
+
+        _showBill(context,bill);
+      }
+    
+    // for(SellItem sellItem in sellItems){
+    //     print('Name: ${sellItem.name},UnitPrice: ${sellItem.unitPrice} , KgPrice:${sellItem.kgPrice}  Buy Amount: ${sellItem.buyAmount}, Total: ${sellItem.itemTotal}');
+    //   }
+    }catch(error){
+      Get.snackbar('Error', error.toString());
+    }
   }
 
   Future<void>_showBill(BuildContext context,Bill bill)async{
@@ -296,6 +350,7 @@ TextEditingController halfPayController=TextEditingController();
                   _salesController.updateSalesData(widget.bill.sellItems);
                 _billController.addBill(widget.bill);
                 widget.textControllers.values.forEach((controller)=>controller.clear());
+                _billController.fetchBills(DateFormat.yMMMd().format(DateTime.now()));
                 Navigator.pop(context);
                 }else{
                   Get.snackbar('Error', 'Buyer Name Cannot Be Empty!',
@@ -312,6 +367,7 @@ TextEditingController halfPayController=TextEditingController();
                    _salesController.updateSalesData(widget.bill.sellItems);
                 _billController.addBill(widget.bill);
                 widget.textControllers.values.forEach((controller)=>controller.clear());
+                _billController.fetchBills(DateFormat.yMMMd().format(DateTime.now()));
                 Navigator.pop(context);
                   
                 }else{
@@ -326,6 +382,7 @@ TextEditingController halfPayController=TextEditingController();
                 _salesController.updateSalesData(widget.bill.sellItems);
                 _billController.addBill(widget.bill);
                widget.textControllers.values.forEach((controller)=>controller.clear());
+               _billController.fetchBills(DateFormat.yMMMd().format(DateTime.now()));
                 Navigator.pop(context);
                
               }

@@ -6,6 +6,7 @@ import 'package:shop_keeper/controllers/daily_sales_controller.dart';
 import 'package:shop_keeper/controllers/item_controller.dart';
 import 'package:shop_keeper/objects/daily_sales.dart';
 import 'package:shop_keeper/objects/item.dart';
+import 'package:shop_keeper/objects/summary.dart';
 import 'package:shop_keeper/screens/add_item_page.dart';
 import 'package:shop_keeper/screens/home_page.dart';
 
@@ -18,6 +19,7 @@ Hive.registerAdapter(ItemAdapter());
 Hive.registerAdapter(BillAdapter());
 Hive.registerAdapter(DailySalesAdapter());
 Hive.registerAdapter(SellItemAdapter());
+Hive.registerAdapter(SummaryAdapter());
 
 if(!Hive.isBoxOpen('itemBox')){
   await Hive.openBox<Item>('itemBox');
@@ -29,6 +31,7 @@ if(!Hive.isBoxOpen('billBox')){
 Get.put(ItemController());
 Get.put(BillController());
 Get.put(DailySalesController());
+
 
   runApp(const MyApp());
 }
