@@ -22,7 +22,10 @@ String payedStatus;
 @HiveField(4)
 String? buyerName;
 
-Bill(this.date,this.sellItems,this.buyerName,this.payedStatus){
+@HiveField(5)
+late double payedAmount;
+
+Bill(this.date,this.sellItems,this.buyerName,this.payedStatus,this.payedAmount){
   fullTotal=calculateTotal();
 }
 

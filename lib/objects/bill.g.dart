@@ -21,13 +21,14 @@ class BillAdapter extends TypeAdapter<Bill> {
       (fields[1] as List).cast<SellItem>(),
       fields[4] as String?,
       fields[3] as String,
+      fields[5] as double,
     )..fullTotal = fields[2] as double;
   }
 
   @override
   void write(BinaryWriter writer, Bill obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
@@ -37,7 +38,9 @@ class BillAdapter extends TypeAdapter<Bill> {
       ..writeByte(3)
       ..write(obj.payedStatus)
       ..writeByte(4)
-      ..write(obj.buyerName);
+      ..write(obj.buyerName)
+      ..writeByte(5)
+      ..write(obj.payedAmount);
   }
 
   @override

@@ -41,7 +41,8 @@ dependencies:
   hive_generator:
   intl: 
   path_provider:
-  build_runner:   
+  build_runner:
+  time_picker_spinner_pop_up: ^1.3.0   
 
 dev_dependencies:
   flutter_test:

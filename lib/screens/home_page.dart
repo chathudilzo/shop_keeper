@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shop_keeper/controllers/bill_controller.dart';
 import 'package:shop_keeper/controllers/daily_sales_controller.dart';
 import 'package:shop_keeper/controllers/item_controller.dart';
 import 'package:shop_keeper/objects/bill.dart';
 import 'package:shop_keeper/objects/sell_item.dart';
+import 'package:shop_keeper/screens/all_bill_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,6 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 ItemController controller=Get.find();
+BillController _billController=Get.find();
+
 var textControllers=<String,TextEditingController>{};
 
   @override
@@ -25,6 +29,9 @@ var textControllers=<String,TextEditingController>{};
       backgroundColor: Color.fromARGB(255, 36, 35, 35),
       appBar: AppBar(
         actions: [
+          IconButton(onPressed: (){
+            Get.to(AllBillPage());
+          }, icon: Icon(Icons.receipt)),
           IconButton(onPressed: (){
             calculateTotal();
           }, icon: Icon(Icons.calculate))
@@ -159,7 +166,7 @@ var textControllers=<String,TextEditingController>{};
       
     }
     if(sellItems.isNotEmpty){
-      final bill=Bill(DateFormat.yMMMd().format(DateTime.now()), sellItems, '', 'Paid');
+      final bill=Bill(DateFormat.yMMMd().format(DateTime.now()), sellItems, '', 'Paid',0);
       print(bill);
 
       _showBill(context,bill);
@@ -178,76 +185,7 @@ var textControllers=<String,TextEditingController>{};
 
     await showDialog(context: context,
      builder: (BuildContext context){
-      return BillDialog(bill);
-      
-      
-      // AlertDialog(
-      //   title: Text(bill.date.toString()),
-      //   content: Column(
-      //     children: [
-      //         DataTable(
-      //           columnSpacing: 20,
-      //           columns:[
-      //             DataColumn(label:Text('Name')),
-      //             //DataColumn(label: Text('Unit Price')),
-                  
-      //             DataColumn(label: Text('Amount')),
-      //             DataColumn(label: Text('Item Total'))
-      //           ],
-      //            rows:
-      //            [
-      //             for(int index=0;index<bill.sellItems.length;index++)
-      //        DataRow(
-              
-      //           cells: [
-      //             DataCell(Column(
-      //               children: [
-      //                 Text(bill.sellItems[index].name),
-      //                 Text(bill.sellItems[index].unitPrice==0?bill.sellItems[index].kgPrice.toString():bill.sellItems[index].unitPrice.toString())
-      //               ],
-      //             )),
-
-
-      //             DataCell(Text(bill.sellItems[index].buyAmount.toString())),
-      //             DataCell(Text(bill.sellItems[index].itemTotal.toString()))
-
-      //           ],
-      //         ) 
-      //            ]
-                 
-      //            ),
-
-      //            Row(
-      //             mainAxisAlignment: MainAxisAlignment.end,
-      //             children: [
-      //               Text('Total:${bill.fullTotal}')
-      //             ],
-      //            ),
-      //            DropdownButton(
-      //             value: status,
-      //             items:[DropdownMenuItem(
-      //             child: Text('Paid'),value: 'Paid',),
-      //             DropdownMenuItem(child: Text('Not Paid'),value: 'Not Paid',)
-      //             ,DropdownMenuItem(child: Text('Full Paid'),value: 'Half Paid',)],
-      //             onChanged: (value){
-      //               setState(() {
-      //                 status=value!;
-      //               });
-      //             })
-
-
-
-
-
-
-
-
-
-            
-            
-      //     ],
-      //   ),
-      // );
+      return BillDialog(bill,textControllers);
      });
   }
 }
@@ -255,8 +193,9 @@ var textControllers=<String,TextEditingController>{};
 
 class BillDialog extends StatefulWidget {
   final Bill bill;
+  final Map<String,TextEditingController> textControllers;
 
-  BillDialog(this.bill);
+  BillDialog(this.bill,this.textControllers);
 
   @override
   _BillDialogState createState() => _BillDialogState();
@@ -265,6 +204,10 @@ class BillDialog extends StatefulWidget {
 class _BillDialogState extends State<BillDialog> {
   String? status;
 DailySalesController _salesController=Get.find();
+BillController _billController=Get.find();
+TextEditingController buyerController=TextEditingController();
+TextEditingController halfPayController=TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -322,18 +265,72 @@ DailySalesController _salesController=Get.find();
                 });
               },
             ),
-            TextButton(onPressed: (){
-              if(status=='Not Paid'){
-      
-              }else if(status=='Half Paid'){
-      
-              }else{
-                _salesController.updateSalesData(widget.bill.sellItems);
-              }
-            }, child: Text('Save'))
+            status=='Not Paid'|| status=='Half Paid'? TextField(
+              controller: buyerController,
+              decoration: InputDecoration(
+                labelText: 'BuyerName',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+              ),
+            ):Container(),
+            SizedBox(height: 10,),
+            status=='Half Paid'?TextField(
+              controller: halfPayController,
+              decoration: InputDecoration(
+                labelText: 'Payed Amount',
+                border: OutlineInputBorder(
+                  
+                  borderRadius: BorderRadius.circular(10)
+                )
+              ),
+
+            ):Container()
+            
           ],
         ),
       ),
+      actions: [
+        TextButton(onPressed: (){
+              if(widget.bill.payedStatus=='Not Paid'){
+                if(buyerController.text.trim().isNotEmpty && buyerController.text!=''){
+                  widget.bill.buyerName=buyerController.text;
+                  _salesController.updateSalesData(widget.bill.sellItems);
+                _billController.addBill(widget.bill);
+                widget.textControllers.values.forEach((controller)=>controller.clear());
+                Navigator.pop(context);
+                }else{
+                  Get.snackbar('Error', 'Buyer Name Cannot Be Empty!',
+                  snackStyle: SnackStyle.FLOATING,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white
+                  );
+                }
+                
+              }else if(widget.bill.payedStatus=='Half Paid'){
+                if(buyerController.text.trim().isNotEmpty && halfPayController.text.trim().isNotEmpty){
+                  widget.bill.buyerName=buyerController.text;
+                  widget.bill.payedAmount=double.parse(halfPayController.text);
+                   _salesController.updateSalesData(widget.bill.sellItems);
+                _billController.addBill(widget.bill);
+                widget.textControllers.values.forEach((controller)=>controller.clear());
+                Navigator.pop(context);
+                  
+                }else{
+                  Get.snackbar('Error', 'Buyer and Paid amount cannot be empty!',
+                  snackStyle: SnackStyle.FLOATING,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white);
+                }
+                
+              }else{
+                widget.bill.payedAmount=widget.bill.fullTotal;
+                _salesController.updateSalesData(widget.bill.sellItems);
+                _billController.addBill(widget.bill);
+               widget.textControllers.values.forEach((controller)=>controller.clear());
+                Navigator.pop(context);
+               
+              }
+            }, child: Text('Save'))
+      ],
     );
   }
 }

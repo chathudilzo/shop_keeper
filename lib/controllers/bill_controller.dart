@@ -6,10 +6,16 @@ import '../objects/bill.dart';
 class BillController extends GetxController{
   RxList<Bill> todayBills=<Bill>[].obs;
   RxBool isLoading=false.obs;
+  RxBool isBilling=false.obs;
+
+
+  
 
   Future<void>addBill(Bill bill)async{
+    isBilling.value=true;
     final box=await Hive.openBox<Bill>('billBox');
     await box.add(bill);
+    isBilling.value=false;
   }
 
   Future<void>fetchBills(String date)async{
