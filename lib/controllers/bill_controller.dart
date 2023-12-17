@@ -10,7 +10,8 @@ class BillController extends GetxController{
   RxBool isLoading=false.obs;
   RxBool isBilling=false.obs;
   Rx<Summary> todaySummary=Summary(DateFormat.yMMMd().format(DateTime.now()), 0, 0, 0).obs;
-
+  RxList<Summary> summaries=<Summary>[].obs;
+  RxBool allSummaryLoading=false.obs;
 
   
 
@@ -45,5 +46,31 @@ class BillController extends GetxController{
       todaySummary.value.depth=depth;
     }
     isLoading.value=false;
+  }
+
+  Future<void>generateSummaries()async{
+    try{
+      summaries.clear();
+      allSummaryLoading.value=true;
+    final box=await Hive.openBox<Bill>('billBox');
+    Set<String> uniqueDates=box.values.toList().map((bill) =>bill.date).toSet();
+    for(String date in uniqueDates){
+      List<Bill> filteredBills=box.values.toList().where((bill) =>bill.date==date).toList();
+
+      double total=0;
+      double income=0;
+      double debt=0;
+
+      for(int i=0;i<filteredBills.length;i++){
+        total+=filteredBills[i].fullTotal;
+        income+=filteredBills[i].payedAmount;
+        debt+=filteredBills[i].fullTotal-filteredBills[i].payedAmount;
+      }
+      summaries.add(Summary(date, total, income, debt));
+    }
+     allSummaryLoading.value=false;
+    }catch(error){
+      print(error.toString());
+    }
   }
 }

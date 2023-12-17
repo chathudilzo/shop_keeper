@@ -37,4 +37,13 @@ Future<void>addItem(Item item)async{
     }
   }
 
+  Future<void>deleteItem(Item item)async{
+    final box=await Hive.openBox<Item>('itemBox');
+    int index=itemList.indexWhere((element) => element.name==item.name);
+    await box.delete(item.key);
+
+    fetchItems();
+
+  }
+
 }

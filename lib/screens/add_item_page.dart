@@ -19,7 +19,10 @@ ItemController _controller=Get.find();
     double width=MediaQuery.of(context).size.width;
     double height=MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 20, 20, 20) ,
       appBar: AppBar(
+        backgroundColor:Color.fromARGB(255, 20, 20, 20) ,
+        foregroundColor: Colors.yellowAccent,
         actions: [
           IconButton(onPressed: (){
             _showAddItemForm(context);
@@ -41,47 +44,68 @@ ItemController _controller=Get.find();
                         itemCount: _controller.itemList.length,
                         itemBuilder: (context,index){
                         final item=_controller.itemList[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              width: width*0.8,
-                              //height: 50,
-                                          
-                                          decoration: BoxDecoration(
-                                            boxShadow: [BoxShadow(
-                                              blurRadius: 2,spreadRadius: 2,offset: Offset(2, 2)
-                                            )],
-                                            color: Colors.amberAccent,
-                                            borderRadius: BorderRadius.circular(10)
+                        return GestureDetector(
+                          onTap: () {
+                            showDialog(context: context, builder: (BuildContext context){
+                              return AlertDialog(
+                                title: Text('Delete Item'),
+                                content: Row(
+                                  children: [],
+                                ),
+                                actions: [
+                                  TextButton(onPressed: (){
+                                    _controller.deleteItem(item);
+                                    Navigator.pop(context);
+                                  }, child: Text('Delete')),
+                                  TextButton(onPressed: (){
+                                    Navigator.pop(context);
+                                  }, child: Text('Cancel'))
+                                ],
+                              );
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                                width: width*0.8,
+                                //height: 50,
                                             
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                          Column(
-                            children: [
-                               Text(item.name,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
-                              Text(item.count.toString())
-                            ],
-                          ),
-                           Column(
-                            children: [
-                              Text('Unit Price',style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
-                              Text(item.unitPrice.toString())
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const Text('1KG price',style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
-                              Text(item.kgPrice.toString())
-                            ],
-                          )
-                                              ],
+                                            decoration: BoxDecoration(
+                                              boxShadow: [BoxShadow(
+                                                blurRadius: 2,spreadRadius: 2,offset: Offset(2, 2)
+                                              )],
+                                              color: Color.fromARGB(136, 64, 249, 255),
+                                              borderRadius: BorderRadius.circular(10)
+                                              
                                             ),
-                                          ),
-                              ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                            Column(
+                              children: [
+                                 Text(item.name,style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
+                                Text(item.count.toString())
+                              ],
+                            ),
+                             Column(
+                              children: [
+                                Text('Unit Price',style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
+                                Text(item.unitPrice.toString())
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                const Text('1KG price',style: TextStyle(color: Colors.black,fontSize: 16,fontWeight: FontWeight.bold),),
+                                Text(item.kgPrice.toString())
+                              ],
+                            )
+                                                ],
+                                              ),
+                                            ),
+                                ),
+                          ),
                         );
                       });
                     }

@@ -138,7 +138,7 @@ body:
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Amount Paid: ${bill.payedAmount}',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                          Text('Depth: ${bill.fullTotal-bill.payedAmount}',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color:(bill.fullTotal-bill.payedAmount)>0? Colors.red:Colors.green),)
+                          Text('Debt: ${bill.fullTotal-bill.payedAmount}',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color:(bill.fullTotal-bill.payedAmount)>0? Colors.red:Colors.green),)
 
                         ],
                        )

@@ -78,7 +78,7 @@ var textControllers=<String,TextEditingController>{};
                     ),
                     Row(
                       children: [
-                        Text('Total Depth: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                        Text('Total Debt: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                         Text(_billController.todaySummary.value.depth.toStringAsFixed(2)),
                       ],
                     ),
@@ -149,7 +149,7 @@ var textControllers=<String,TextEditingController>{};
                                   SizedBox(
                                   child: Column(
                                     children: [
-                                      DropdownButton<String>(items:<String>['','100','250','500','1000'].map<DropdownMenuItem<String>>((String value){
+                                      DropdownButton<String>(items:<String>['','100','250','500','750','1000'].map<DropdownMenuItem<String>>((String value){
                                         return DropdownMenuItem<String>(child:Text(value),value: value,);
                                       }).toList(),
 

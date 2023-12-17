@@ -9,7 +9,8 @@ import 'package:shop_keeper/objects/item.dart';
 import 'package:shop_keeper/objects/summary.dart';
 import 'package:shop_keeper/screens/add_item_page.dart';
 import 'package:shop_keeper/screens/home_page.dart';
-
+import 'package:shop_keeper/screens/welcome_page.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'objects/bill.dart';
 import 'objects/sell_item.dart';
 
@@ -49,7 +50,38 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home:  AnimatedSplashScreen(splash: Splash(),
+      duration: 3000,
+      splashTransition: SplashTransition.fadeTransition,
+      splashIconSize:500 ,
+      backgroundColor: Colors.black,
+       nextScreen: WelcomePage()),
+    );
+  }
+}
+
+class Splash extends StatelessWidget {
+  const Splash({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
+    double height=MediaQuery.of(context).size.height;
+    return Container(
+        width: width,
+        height: height,
+        color: Colors.black,
+        
+        
+            child: Column(
+              children: [
+                Image(image: AssetImage('assets/746w.gif',),fit: BoxFit.cover,width: 300,height: 300, ),
+                Text('Loading...',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)
+              ],
+            ),
+          
+        
+      
     );
   }
 }
