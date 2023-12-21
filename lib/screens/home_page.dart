@@ -237,7 +237,7 @@ var textControllers=<String,TextEditingController>{};
       
       }
       if(sellItems.isNotEmpty){
-        final bill=Bill(DateFormat.yMMMd().format(DateTime.now()), sellItems, '', 'Paid',0);
+        final bill=Bill(DateFormat.yMMMd().format(DateTime.now().add(Duration(days: 0))), sellItems, '', 'Paid',0);
         print(bill);
 
         _showBill(context,bill);

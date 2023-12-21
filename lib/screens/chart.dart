@@ -3,8 +3,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shop_keeper/controllers/bill_controller.dart';
 import 'package:shop_keeper/controllers/daily_sales_controller.dart';
 import 'package:shop_keeper/controllers/summery_controller.dart';
+import 'package:shop_keeper/objects/summary.dart';
 
 import '../objects/daily_sales.dart';
 
@@ -17,7 +19,7 @@ class _BarChart extends StatefulWidget {
 }
 
 class _BarChartState extends State<_BarChart> {
-  SummaryController summaryController=Get.find();
+  BillController summaryController=Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -37,7 +39,7 @@ class _BarChartState extends State<_BarChart> {
       child:Obx((){
                 if(summaryController.isLoading.value){
                   return CircularProgressIndicator();
-                }else if(summaryController.allDailySalesList.isEmpty){
+                }else if(summaryController.summaries.isEmpty){
                   return Text('Empty');
                 }else{
                   return BarChart(
@@ -45,10 +47,10 @@ class _BarChartState extends State<_BarChart> {
           barTouchData: barTouchData,
           titlesData: titlesData,
           borderData: borderData,
-          barGroups: barGroups,
+          barGroups: generateBarGroups(),
           gridData:  FlGridData(show: false),
           alignment: BarChartAlignment.spaceAround,
-          maxY: 20,
+          //maxY: 20,
         ),
         );
         }
@@ -60,6 +62,28 @@ class _BarChartState extends State<_BarChart> {
        
     
   }
+
+List<BarChartGroupData>generateBarGroups(){
+  List<Summary> last7Days=summaryController.summaries.reversed.take(7).toList();
+
+  return List.generate(7, (index){
+    if(index<last7Days.length){
+      return BarChartGroupData(x: index,
+      barRods: [
+        BarChartRodData(toY: last7Days[index].total,gradient: _barsGradient)
+      ],showingTooltipIndicators: [0]);
+    }else{
+      return BarChartGroupData(x: index,barRods: [
+        BarChartRodData(toY: 0,gradient: _barsGradient)
+      ],
+      showingTooltipIndicators: [0],
+      );
+    }
+  });
+}
+
+
+
 
   BarTouchData get barTouchData => BarTouchData(
         enabled: false,
@@ -90,38 +114,19 @@ class _BarChartState extends State<_BarChart> {
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
-    switch (value.toInt()) {
-      case 0: 
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 1:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 2:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 3:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 4:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 5:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      case 6:
-        text =dailyController.allDailySalesList[0].date;
-        break;
-      default:
-        text =dailyController.allDailySalesList[0].date;      
-        break;
+    List<Summary>last7Days=summaryController.summaries.reversed.take(7).toList();
+
+    if(value>=0 && value<last7Days.length){
+      final dateString=last7Days[value.toInt()].date;
+      final DateTime dateTime=DateFormat.yMMMd().parse(dateString);
+      final day=DateFormat.d().format(dateTime);
+
+      return SideTitleWidget(child: Text(day,style: style,), axisSide: meta.axisSide,space: 4,);
+    }else{
+      return SideTitleWidget(child: Text("",style: style,), axisSide: meta.axisSide,space: 4,);
     }
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 4,
-      child: Text(text, style: style),
-    );
+
+    
   }
 
   FlTitlesData get titlesData => FlTitlesData(
@@ -158,78 +163,7 @@ class _BarChartState extends State<_BarChart> {
         end: Alignment.topCenter,
       );
 
-  List<BarChartGroupData> get barGroups => [
-        BarChartGroupData(
-          x: 0,
-          barRods: [
-            BarChartRodData(
-              toY: 8,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 1,
-          barRods: [
-            BarChartRodData(
-              toY: 10,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 2,
-          barRods: [
-            BarChartRodData(
-              toY: 14,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 3,
-          barRods: [
-            BarChartRodData(
-              toY: 15,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 4,
-          barRods: [
-            BarChartRodData(
-              toY: 13,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 5,
-          barRods: [
-            BarChartRodData(
-              toY: 10,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-        BarChartGroupData(
-          x: 6,
-          barRods: [
-            BarChartRodData(
-              toY: 16,
-              gradient: _barsGradient,
-            )
-          ],
-          showingTooltipIndicators: [0],
-        ),
-      ];
+  
 }
 
 class BarChartSample3 extends StatefulWidget {

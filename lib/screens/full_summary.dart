@@ -37,83 +37,86 @@ class _FullSummaryPageState extends State<FullSummaryPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            SizedBox(
-              width: width,
-              height: height*0.4,
-              child: 
-                  Obx((){
-                    if(controller.allSummaryLoading.value){
-                      return Center(
-                        child: LoadingAnimationWidget.inkDrop(color: Colors.yellowAccent, size: 30),
-                      );
-                    }else if(controller.summaries.isEmpty){
-                      return Center(child:Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+            Expanded(
+              child: SizedBox(
+                width: width,
+                //height: height*0.4,
+                child: 
+                    Obx((){
+                      if(controller.allSummaryLoading.value){
+                        return Center(
+                          child: LoadingAnimationWidget.inkDrop(color: Colors.yellowAccent, size: 30),
+                        );
+                      }else if(controller.summaries.isEmpty){
+                        return Center(child:Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
+                                SizedBox(height: 10,),
+                                Text('No Summaries Found!',style: TextStyle(color: Colors.white),)
+            
+                              ],
+                            ));
+                      }else{
+                        return ListView.builder(
+                          itemCount: controller.summaries.length,
+                          itemBuilder: (BuildContext contex,index){
+                          return Card(
+                            elevation: 3,
+                        
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
-                              SizedBox(height: 10,),
-                              Text('No Summaries Found!',style: TextStyle(color: Colors.white),)
-
-                            ],
-                          ));
-                    }else{
-                      return ListView.builder(
-                        itemCount: controller.summaries.length,
-                        itemBuilder: (BuildContext contex,index){
-                        return Card(
-                          elevation: 3,
-                      
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                              children: [
-                                Text('Date: ',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                                Text(controller.summaries[index].date,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Total Sales: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                Text(controller.summaries[index].total.toStringAsFixed(2),style: TextStyle(color: Colors.blueAccent),),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Total Income: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                Text(controller.summaries[index].income.toStringAsFixed(2),style: TextStyle(color: Colors.green),),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text('Total Debt: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                Text(controller.summaries[index].depth.toStringAsFixed(2),style: TextStyle(color: Colors.orangeAccent),),
-                              ],
-                            ),
-                              ],
-                            ),
-                            
-                            ClipRRect(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                children: [
+                                  Text('Date: ',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                  Text(controller.summaries[index].date,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text('Total Sales: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                  Text(controller.summaries[index].total.toStringAsFixed(2),style: TextStyle(color: Colors.blueAccent),),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text('Total Income: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                  Text(controller.summaries[index].income.toStringAsFixed(2),style: TextStyle(color: Colors.green),),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text('Total Debt: ',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                  Text(controller.summaries[index].depth.toStringAsFixed(2),style: TextStyle(color: Colors.orangeAccent),),
+                                ],
+                              ),
+                                ],
+                              ),
                               
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image(image: AssetImage('assets/cardback.png'),width: 70,height: 70,),
-                            )
-                            
-                          ],
+                              ClipRRect(
+                                
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image(image: AssetImage('assets/cardback.png'),width: 70,height: 70,),
+                              )
+                              
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                      });
-                    }
-                  })
+                      );
+                        });
+                      }
+                    })
+                  
                 
-              
+              ),
             ),
+            SizedBox(height: 30,),
             BarChartSample3()
           ],
         ),
