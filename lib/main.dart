@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:shop_keeper/controllers/bill_controller.dart';
@@ -33,6 +34,9 @@ Get.put(ItemController());
 Get.put(BillController());
 Get.put(DailySalesController());
 
+SystemChrome.setPreferredOrientations([
+  DeviceOrientation.portraitUp
+]);
 
   runApp(const MyApp());
 }
@@ -50,7 +54,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  AnimatedSplashScreen(splash: Splash(),
+      home:  AnimatedSplashScreen(splash:const Splash(),
       duration: 3000,
       splashTransition: SplashTransition.fadeTransition,
       splashIconSize:500 ,
@@ -73,7 +77,7 @@ class Splash extends StatelessWidget {
         color: Colors.black,
         
         
-            child: Column(
+            child:const Column(
               children: [
                 Image(image: AssetImage('assets/746w.gif',),fit: BoxFit.cover,width: 300,height: 300, ),
                 Text('Loading...',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)

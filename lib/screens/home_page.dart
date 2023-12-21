@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shop_keeper/controllers/bill_controller.dart';
 import 'package:shop_keeper/controllers/daily_sales_controller.dart';
 import 'package:shop_keeper/controllers/item_controller.dart';
@@ -50,8 +51,7 @@ var textControllers=<String,TextEditingController>{};
           }, icon: Icon(Icons.sell))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body:Column(
           children: [
             SizedBox(height: 10,),
             Obx((){
@@ -89,110 +89,130 @@ var textControllers=<String,TextEditingController>{};
             );
               }
             } ),
-            SizedBox(
-              width: width,
-              height: height*0.9,
-              child: Obx((){
-                if(controller.isLoading.value){
-                  return CircularProgressIndicator();
-                }else if(controller.itemList.isEmpty){
-                  return Text('No Items');
-                }else{
-                  
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListView.builder(
-                      itemCount: controller.itemList.length,
-                      itemBuilder:(context,index){
-                        final item=controller.itemList[index];
-                        final textController=textControllers[item.name]?? TextEditingController();
-                        textControllers[item.name]=textController;
-                              String dropDownValue='';
-                        return Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text("Kg price: ${item.kgPrice.toStringAsFixed(2)}",
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      Text("Unit Price: ${item.unitPrice.toStringAsFixed(2)}",
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+            Expanded(
+              child: SizedBox(
+                 width: width,
+                // height: height,
+                
+                     child: Obx((){
+                                   if(controller.isLoading.value){
+                      return Center(
+                        child: LoadingAnimationWidget.inkDrop(
+                          color: Colors.yellowAccent, size: 30),
+                      );
+                                   }else if(controller.itemList.isEmpty){
+                      return Center(child:Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
+                              SizedBox(height: 10,),
+                              Text('No Items Found!',style: TextStyle(color: Colors.white),)
+                   
+                            ],
+                          ));
+                                   }else{
+                      
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child:  ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: controller.itemList.length,
+                            itemBuilder:(context,index){
+                              final item=controller.itemList[index];
+                              final textController=textControllers[item.name]?? TextEditingController();
+                              textControllers[item.name]=textController;
+                                    String dropDownValue='';
+                              return Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  SizedBox(
-                                  child: Column(
-                                    children: [
-                                      DropdownButton<String>(items:<String>['','100','250','500','750','1000'].map<DropdownMenuItem<String>>((String value){
-                                        return DropdownMenuItem<String>(child:Text(value),value: value,);
-                                      }).toList(),
-
-                                      value: dropDownValue,
-                                      //icon: Icon(Icons.arrow_downward),
-                                      onChanged:(String? newValue){
-                                        setState(() {
-                                          dropDownValue=newValue!;
-                                          textController.text=newValue;
-                                        });
-                                      })
-                                    ],
-                                  ),
-                                  ),
-                                  SizedBox(
-                                    width: width * 0.4,
-                                    child: TextField(
-                                      controller: textController,
-                                      keyboardType: TextInputType.number,
-                                      style: TextStyle(fontSize: 16),
-                                      decoration: InputDecoration(
-                                        labelText: 'Buy Amount',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                item.name,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text("Kg price: ${item.kgPrice.toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              Text("Unit Price: ${item.unitPrice.toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                        SizedBox(
+                                        child: Column(
+                                          children: [
+                                            DropdownButton<String>(items:<String>['','100','250','500','750','1000'].map<DropdownMenuItem<String>>((String value){
+                                              return DropdownMenuItem<String>(child:Text(value),value: value,);
+                                            }).toList(),
+                        
+                                            value: dropDownValue,
+                                            //icon: Icon(Icons.arrow_downward),
+                                            onChanged:(String? newValue){
+                                              setState(() {
+                                                dropDownValue=newValue!;
+                                                textController.text=newValue;
+                                              });
+                                            })
+                                          ],
+                                        ),
+                                        ),
+                                        SizedBox(
+                                          width: width * 0.4,
+                                          child: TextField(
+                                            controller: textController,
+                                            keyboardType: TextInputType.number,
+                                            style: TextStyle(fontSize: 16),
+                                            decoration: InputDecoration(
+                                              labelText: 'Buy Amount',
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
-
-                        );
-                       
-                    }),
-                  );
-                }
-              }),
+                                )
+                        
+                              );
+                             
+                          }),
+                        
+                      );
+                                   }
+                                 }),
+                   ),
             )
+              
+            
           ],
         ),
-      ),
+      
     );
   }
 
@@ -270,78 +290,104 @@ TextEditingController halfPayController=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+   double width=MediaQuery.of(context).size.width;
+  double height=MediaQuery.of(context).size.height;
+
     return AlertDialog(
       title: Text(widget.bill.date.toString()),
-      content: SingleChildScrollView(
-        child: Column(
-          children: [
-            DataTable(
-              columnSpacing: 20,
-              columns: [
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Amount')),
-                DataColumn(label: Text('Total'))
-              ],
-              rows: [
-                for (int index = 0; index < widget.bill.sellItems.length; index++)
-                  DataRow(
-                    cells: [
-                      DataCell(Column(
-                        children: [
-                          Text(widget.bill.sellItems[index].name),
-                          Text(widget.bill.sellItems[index].unitPrice == 0
-                              ? widget.bill.sellItems[index].kgPrice.toString()
-                              : widget.bill.sellItems[index].unitPrice.toString())
+      content:Column(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: width,
+                  height: height*0.6,
+                  child: SingleChildScrollView(
+                    child: DataTable(
+                        dataRowMaxHeight: 70,
+                        columnSpacing: 20,
+                        columns: [
+                          DataColumn(label: Text('Name')),
+                          DataColumn(label: Text('Amount')),
+                          DataColumn(label: Text('Total'))
                         ],
-                      )),
-                      DataCell(Text(widget.bill.sellItems[index].buyAmount.toStringAsFixed(2))),
-                      DataCell(Text(widget.bill.sellItems[index].itemTotal.toStringAsFixed(2)))
+                        rows: [
+                          for (int index = 0; index < widget.bill.sellItems.length; index++)
+                            DataRow(
+                              
+                              cells: [
+                                DataCell(
+                                  
+                                  Column(
+                                  children: [
+                                    Text(widget.bill.sellItems[index].name),
+                                    Text(widget.bill.sellItems[index].unitPrice == 0
+                                        ? widget.bill.sellItems[index].kgPrice.toString()
+                                        : widget.bill.sellItems[index].unitPrice.toString())
+                                  ],
+                                )),
+                                DataCell(Text(widget.bill.sellItems[index].buyAmount.toStringAsFixed(2))),
+                                DataCell(Text(widget.bill.sellItems[index].itemTotal.toStringAsFixed(2)))
+                              ],
+                            )
+                        ],
+                      ),
+                  ),
+                ),
+              ),
+              Expanded(
+                
+                child:SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      
+                              Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [Text('Total:'),
+                  Text(widget.bill.fullTotal.toStringAsFixed(2),style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)],
+                              ),
+                              DropdownButton(
+                  value: status,
+                  items: [
+                    DropdownMenuItem(child: Text('Paid'), value: 'Paid'),
+                    DropdownMenuItem(child: Text('Not Paid'), value: 'Not Paid'),
+                    DropdownMenuItem(child: Text('Half Paid'), value: 'Half Paid'),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      status = value!;
+                      widget.bill.payedStatus=status!;
+                    });
+                  },
+                              ),
+                              status=='Not Paid'|| status=='Half Paid'? TextField(
+                  controller: buyerController,
+                  decoration: InputDecoration(
+                    labelText: 'BuyerName',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+                  ),
+                              ):Container(),
+                              SizedBox(height: 10,),
+                              status=='Half Paid'?TextField(
+                  controller: halfPayController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Payed Amount',
+                    border: OutlineInputBorder(
+                      
+                      borderRadius: BorderRadius.circular(10)
+                    )
+                  ),
+                        
+                              ):Container()
                     ],
-                  )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [Text('Total:'),
-              Text(widget.bill.fullTotal.toStringAsFixed(2),style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)],
-            ),
-            DropdownButton(
-              value: status,
-              items: [
-                DropdownMenuItem(child: Text('Paid'), value: 'Paid'),
-                DropdownMenuItem(child: Text('Not Paid'), value: 'Not Paid'),
-                DropdownMenuItem(child: Text('Half Paid'), value: 'Half Paid'),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  status = value!;
-                  widget.bill.payedStatus=status!;
-                });
-              },
-            ),
-            status=='Not Paid'|| status=='Half Paid'? TextField(
-              controller: buyerController,
-              decoration: InputDecoration(
-                labelText: 'BuyerName',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-              ),
-            ):Container(),
-            SizedBox(height: 10,),
-            status=='Half Paid'?TextField(
-              controller: halfPayController,
-              decoration: InputDecoration(
-                labelText: 'Payed Amount',
-                border: OutlineInputBorder(
-                  
-                  borderRadius: BorderRadius.circular(10)
-                )
-              ),
-
-            ):Container()
-            
-          ],
-        ),
-      ),
+                  ),
+                ),
+              )
+              
+            ],
+          ),
+        
+      
       actions: [
         TextButton(onPressed: (){
               if(widget.bill.payedStatus=='Not Paid'){

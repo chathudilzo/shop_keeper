@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shop_keeper/screens/add_item_page.dart';
 import 'package:shop_keeper/screens/all_bill_page.dart';
+import 'package:shop_keeper/screens/all_daily_sales.dart';
 import 'package:shop_keeper/screens/chart.dart';
 import 'package:shop_keeper/screens/daily_sales_page.dart';
 import 'package:shop_keeper/screens/dev_meet.dart';
@@ -203,7 +204,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => Get.to(AllBillPage()),
+                          onTap: () => Get.to(AllDailySalesPage()),
                           child: Container(
                             width: width*0.35,
                             height: width*0.30,

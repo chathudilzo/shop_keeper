@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_keeper/controllers/item_controller.dart';
 import 'package:shop_keeper/objects/item.dart';
-
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 class ItemPage extends StatefulWidget {
   const ItemPage({super.key});
 
@@ -26,7 +26,10 @@ ItemController _controller=Get.find();
         actions: [
           IconButton(onPressed: (){
             _showAddItemForm(context);
-          }, icon: Icon(Icons.add))
+          }, icon: Icon(Icons.add)),
+          IconButton(onPressed: (){
+            _showDeleteAll(context);
+          }, icon: Icon(Icons.delete))
         ],
       ),
       body:
@@ -36,9 +39,17 @@ ItemController _controller=Get.find();
                     height: height,
                   child: Obx((){
                     if(_controller.isLoading.value){
-                      return CircularProgressIndicator();
+                      return Center(child: LoadingAnimationWidget.beat(color: Colors.yellowAccent, size: 30));
                     }else if(_controller.itemList.isEmpty){
-                      return Text('No Items');
+                      return Center(child:Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
+                          SizedBox(height: 10,),
+                          Text('No Items Found!',style: TextStyle(color: Colors.white),)
+
+                        ],
+                      ));
                     }else{
                       return ListView.builder(
                         itemCount: _controller.itemList.length,
@@ -48,15 +59,23 @@ ItemController _controller=Get.find();
                           onTap: () {
                             showDialog(context: context, builder: (BuildContext context){
                               return AlertDialog(
-                                title: Text('Delete Item'),
-                                content: Row(
-                                  children: [],
+                                title: Text('${item.name}'),
+                                content: SizedBox(
+                                  width: 200,
+                                  height: 200,
+                                  child: Image(image: AssetImage('assets/delandupdate.png'),fit: BoxFit.cover,),
                                 ),
                                 actions: [
                                   TextButton(onPressed: (){
                                     _controller.deleteItem(item);
                                     Navigator.pop(context);
-                                  }, child: Text('Delete')),
+                                  }, child: Text('Delete',style: TextStyle(color: Colors.red,fontSize: 18,fontWeight: FontWeight.bold),)),
+                                  
+                                  TextButton(onPressed: (){
+                                    Navigator.pop(context);
+                                    _showUpdateItemForm(context,item);
+                                  }, child: Text('Update',style: TextStyle(color: Colors.green,fontSize: 18,fontWeight: FontWeight.bold),)),
+                                  
                                   TextButton(onPressed: (){
                                     Navigator.pop(context);
                                   }, child: Text('Cancel'))
@@ -121,11 +140,196 @@ ItemController _controller=Get.find();
   
   }
 
+Future<void>_showDeleteAll(BuildContext context)async{
+await showDialog(context: context, builder: (BuildContext context){
+  return AlertDialog(
+    title: Text('Delete All Items'),
+    content: SingleChildScrollView(
+      child: Column(
+        children: [
+          ClipRRect(
+            
+            borderRadius: BorderRadius.circular(150),
+            child: Image(image: AssetImage('assets/deleteall.png'),fit: BoxFit.cover,),
+          ),
+          Text('Are You Sure You Want To Delete All Items?',style: TextStyle(
+            fontSize: 18,color: Colors.red,fontWeight: FontWeight.bold
+          ),)
+        ],
+      ),
+      
+    ),
+  actions: [
+    TextButton(onPressed: (){
+      _controller.deleteAll();
+      Navigator.pop(context);
+
+    }, child: Text('Yes',style: TextStyle(color: Colors.red,fontSize: 16),)),
+    TextButton(onPressed: (){
+      Navigator.pop(context);
+    }, child: Text('No',style: TextStyle(fontSize: 20),))
+
+  ],
+  );
+  
+});
+}
+
+
+Future<void>_showUpdateItemForm(BuildContext context,Item item)async{
+ TextEditingController countController = TextEditingController(text: item.count.toString());
+  TextEditingController unitPriceController = TextEditingController(text: item.unitPrice.toString());
+  TextEditingController kgPriceController = TextEditingController(text: item.kgPrice.toString());
+
+String name=item.name;
+
+  final GlobalKey<FormState>_formKey=GlobalKey<FormState>();
+
+  await showDialog(context: context, builder: (BuildContext cotext){
+    return AlertDialog(
+      title: Text('Update Item'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+          children: [
+            TextFormField(
+              enabled: false,
+              initialValue: name,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                labelText: 'Item Name'
+              ),
+            ),
+            SizedBox(height: 10,),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              controller: countController,
+              //initialValue: countController.text,
+              decoration: InputDecoration(
+                
+                labelText: 'Count/Amount',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10)
+                  
+                ),
+              
+                
+              ),
+              validator: (value) {
+                if(value==null|| value.isEmpty){
+                  countController.text='0';
+                  }
+              },
+              // onChanged: (value) {
+              //   print(value);
+              //   if(value.trim()==''){
+              //     value='0';
+              //     count=value;
+              //   }
+              //   print(value);
+              // },
+            ),
+            SizedBox(height: 10,),
+            TextFormField(keyboardType: TextInputType.number,
+              controller: unitPriceController,
+              //initialValue: unitPriceController.text,
+              decoration: InputDecoration(
+                labelText: 'Unit Price',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10)
+                  
+                ),
+                
+              ),
+              validator: (value) {
+                if(value==null || value.isEmpty){
+                  return 'Price cannot be empty';
+                }
+                return null;
+              },
+              // onChanged: (value) {
+              //   print(value);
+              //   if(value.trim()==''){
+              //     value='0';
+              //     unitPrice=value;
+              //   }
+              //   print(value);
+              // },
+            ),
+            SizedBox(height: 10,),
+            TextFormField(keyboardType: TextInputType.number,
+              //initialValue: kgPriceController.text,
+              controller: kgPriceController,
+              decoration: InputDecoration(
+                labelText: '1KG Price',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10)
+                  
+                ),
+                
+              ),
+              validator: (value) {
+                if(value==null|| value.isEmpty){
+                  return 'Price cannot be empty';
+                }return null;
+              },
+              // onChanged: (value) {
+              //   print(value);
+              //   if(value.trim()==''){
+              //     value='0';
+              //     kgPrice=value;
+              //   }
+              //   print(value);
+              // },
+            ),
+          ],
+              ),
+        )),
+      actions: [
+        TextButton(onPressed: (){
+          Navigator.pop(context);
+        }, child: Text('Cancel')),
+
+        TextButton(onPressed: (){
+          if(_formKey.currentState?.validate()??false){
+            try{
+              print('name:$name , UnitPrice:${unitPriceController.text} ,KGprice:${kgPriceController.text} ,Amount: ${countController.text}');
+            double uPrice=double.parse(unitPriceController.text);
+            double kprice=double.parse(kgPriceController.text);
+print('name:$name , UnitPrice:$uPrice ,KGprice:$kprice ,Amount: ${countController.text}');
+
+            if(uPrice!=0 && kprice==0 || uPrice==0 && kprice!=0){
+             Item item= Item(name, double.parse(countController.text), double.parse(unitPriceController.text), double.parse(kgPriceController.text));
+              _controller.updateItem(item);
+              Navigator.pop(context);
+            }else{
+              Get.snackbar('Invalid Inputs', 'Only one price can be added! and both cannot be 0');
+            }
+            }catch(error){
+              Get.snackbar('Error', error.toString());
+            }
+          }
+        }, child:Text('Update'))
+      ],
+    );
+  });
+
+}
+
+
+
+
   Future<void>_showAddItemForm(BuildContext context)async{
-String name='';
-String count='0';
-String unitPrice='0';
-String kgPrice='0';
+TextEditingController countController = TextEditingController(text:'');
+  TextEditingController unitPriceController = TextEditingController(text: '');
+  TextEditingController kgPriceController = TextEditingController(text:'');
+TextEditingController nameController = TextEditingController(text:'');
+
+
+
 
 final GlobalKey<FormState> formKey=GlobalKey<FormState>();
 //ItemController _controller=Get.find();
@@ -136,10 +340,11 @@ await showDialog(context: context,
     content: Form(
       key: formKey,
       child: SingleChildScrollView(
+        physics:ClampingScrollPhysics(),
         child: Column(
           children: [
             TextFormField(
-              
+              controller: nameController,
               decoration: InputDecoration(
                 labelText: 'Item Name'
               ),
@@ -149,73 +354,58 @@ await showDialog(context: context,
                 }
                 return null;
               },
-              onChanged: (value) => name=value,
+              
             ),
             SizedBox(height: 10,),
           
             TextFormField(
+              controller: countController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Count/Amount'
               ),
               validator: (value) {
-                if(value==null || value=='0'){
-                  return 'Amount Cannot be 0';
+                if(value==null || value.isEmpty){
+                  countController.text='0';
                 }
                 return null;
           
               },
-              onChanged: (value){
-                try{
-                  count=value;
-                }catch(error){
-                  print(error);
-                }
-              },
+              
             ),
             SizedBox(height: 10,),
           
             TextFormField(
+              controller: unitPriceController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Unit Price'
               ),
-                // validator: (value) {
-                //   if(value==null || value==''){
-                //     return 'Amount Cannot be nul';
-                //   }
-                //   return null;
+                 validator: (value) {
+                   if(value==null || value.isEmpty){
+                     unitPriceController.text='0';
+                   }
+                   return null;
           
-                // },
-              onChanged: (value){
-                try{
-                  unitPrice=value;
-                }catch(error){
-                  print(error);
-                }
-              },
+                 },
+              
             ),
             SizedBox(height: 10,),
           
             TextFormField(
+              controller: kgPriceController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: '1kg Price'
               ),
-                // validator: (value) {
-                //   if(value==null || value=='0'){
-                //     return 'Amount Cannot be null';
-                //   }
-                //   return null;
+                 validator: (value) {
+                   if(value==null || value.isEmpty){
+                     kgPriceController.text='0';
+                   }
+                   return null;
           
-                // },
-              onChanged: (value){
-                try{
-                  kgPrice=value;
-                }catch(error){
-                  print(error);
-                }
-              },
+                 },
+              
             )
           
           
@@ -229,17 +419,25 @@ await showDialog(context: context,
     
     TextButton(
       onPressed: (){
-        if(formKey.currentState?.validate()??false){
-          if((unitPrice!='0' && unitPrice!='')||(kgPrice!='0' && kgPrice!='')){
-            Item item=Item(name,double.parse(count),double.parse(unitPrice),double.parse(kgPrice));
+        try{
+          if(formKey.currentState?.validate()??false){
+          if(((unitPriceController.text.trim()!='0' && unitPriceController.text.trim()!='')
+          && (kgPriceController.text.trim()=='0') )
+          ||((kgPriceController.text.trim()!='0' && kgPriceController.text.trim()!='')
+          &&(unitPriceController.text.trim()=='0'))
+          ){
+            Item item=Item(nameController.text,double.parse(countController.text.trim()),double.parse(unitPriceController.text.trim()),double.parse(kgPriceController.text.trim()));
           _controller.addItem(item);
           Navigator.pop(context);
             
           }else{
-            Get.snackbar('Price', 'At least One Price Needed!');
+            Get.snackbar('Price', 'At least One Price Needed from unit and Kg and cannot add both!');
           }
 
           
+        }
+        }catch(error){
+        Get.snackbar('Error', error.toString());
         }
       },
       child: Text('Add'),

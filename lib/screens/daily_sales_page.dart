@@ -26,7 +26,9 @@ String date=DateFormat.yMMMd().format(DateTime.now());
     double height=MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Today Sales'),
+      ),
       body: SizedBox(
         height: height,
         width: width,
@@ -34,9 +36,15 @@ String date=DateFormat.yMMMd().format(DateTime.now());
           if(controller.isLoading.value){
             return CircularProgressIndicator();
           }else if(controller.dailySales.salesData.isEmpty){
-            return Center(
-              child: Text('No Sales To Show'),
-            );
+            return Center(child:Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
+                          SizedBox(height: 10,),
+                          Text('No Sales Found!',style: TextStyle(color: const Color.fromARGB(255, 2, 2, 2)),)
+
+                        ],
+                      ));
           }else{
          
               return Card(
@@ -53,7 +61,9 @@ String date=DateFormat.yMMMd().format(DateTime.now());
                       Text((controller.dailySales.salesData.fold(0.0, (sum, item) => sum+item.itemTotal)).toStringAsFixed(2),style: TextStyle(color: Colors.blueAccent,fontSize: 18,fontWeight: FontWeight.bold),),
                         ],
                       ),
-                      DataTable(columns:[
+                      DataTable(
+                        dataRowHeight: 60,
+                        columns:[
                         DataColumn(label: Text('Item')),
                         DataColumn(label: Column(
                           children: [

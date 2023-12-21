@@ -6,6 +6,7 @@ class MeetDevelopers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text('Developer Page'),
       ),
@@ -68,7 +69,65 @@ class MeetDevelopers extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text('Welcome to the Developer Page!'),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 75,
+                backgroundImage: AssetImage('assets/back.jpeg'),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Welcome to the Developer Profile!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'I am',
+                style: TextStyle(
+                  color: Colors.amberAccent,
+                  fontSize: 20,
+                ),
+              ),
+              Text(
+                'CHATHURA DILSHAN',
+                style: TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Add any action you want
+                },
+                child: Text('Explore More'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.amberAccent,
+                  textStyle: TextStyle(color: Colors.black),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

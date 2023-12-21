@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shop_keeper/controllers/bill_controller.dart';
 import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
 
@@ -78,14 +79,20 @@ body:
   
           
   
-              return CircularProgressIndicator();
+              return Center(child: LoadingAnimationWidget.dotsTriangle(color: Colors.yellowAccent, size: 30),);
   
           
   
             }else if(billController.todayBills.isEmpty){
-             return Center(
-              child: Text('No Bills To Show',style: TextStyle(color: Colors.white,fontSize: 25),),
-             );
+             return Center(child:Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(image: AssetImage('assets/nothing.png'),width:150,height: 150,),
+                          SizedBox(height: 10,),
+                          Text('No Bills Found!',style: TextStyle(color: Colors.white),)
+
+                        ],
+                      ));
             }
             
             
@@ -149,6 +156,7 @@ body:
                           ],
                         ),
                         DataTable(
+                      dataRowHeight: 60,
                           columns:[
                           DataColumn(label: Text('Name'),),
                           DataColumn(label: Text('Amount')),

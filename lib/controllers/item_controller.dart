@@ -39,11 +39,43 @@ Future<void>addItem(Item item)async{
 
   Future<void>deleteItem(Item item)async{
     final box=await Hive.openBox<Item>('itemBox');
-    int index=itemList.indexWhere((element) => element.name==item.name);
+    //int index=itemList.indexWhere((element) => element.name==item.name);
+    print(item.key);
     await box.delete(item.key);
 
     fetchItems();
 
+  }
+
+  Future<void>updateItem(Item item)async{
+    try{
+      final box=await Hive.openBox<Item>('itemBox');
+    Item? existingItem=box.get(item.key);
+
+    if(existingItem!=null){
+      existingItem.name=item.name;
+      existingItem.count=item.count;
+      existingItem.unitPrice=item.unitPrice;
+      existingItem.kgPrice=item.kgPrice;
+
+
+      await box.put(existingItem.key, existingItem);
+      fetchItems();
+    }
+    }catch(error){
+      Get.snackbar('Error', error.toString());
+    }
+
+  }
+
+  Future<void>deleteAll()async{
+    try{
+      final box=await Hive.openBox<Item>('itemBox');
+      await box.clear();
+      fetchItems();
+    }catch(error){
+      Get.snackbar('Error', error.toString());
+    }
   }
 
 }

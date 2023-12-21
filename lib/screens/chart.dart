@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shop_keeper/controllers/daily_sales_controller.dart';
+import 'package:shop_keeper/controllers/summery_controller.dart';
 
 import '../objects/daily_sales.dart';
 
@@ -16,7 +17,7 @@ class _BarChart extends StatefulWidget {
 }
 
 class _BarChartState extends State<_BarChart> {
-  DailySalesController dailyController=Get.find();
+  SummaryController summaryController=Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -33,8 +34,13 @@ class _BarChartState extends State<_BarChart> {
     return SizedBox(
       width: width,
       height: height,
-      child:
-       BarChart(
+      child:Obx((){
+                if(summaryController.isLoading.value){
+                  return CircularProgressIndicator();
+                }else if(summaryController.allDailySalesList.isEmpty){
+                  return Text('Empty');
+                }else{
+                  return BarChart(
         BarChartData(
           barTouchData: barTouchData,
           titlesData: titlesData,
@@ -44,12 +50,15 @@ class _BarChartState extends State<_BarChart> {
           alignment: BarChartAlignment.spaceAround,
           maxY: 20,
         ),
-      
-      
-      
-          
-        )
-    );
+        );
+        }
+      }
+      )
+      );
+
+
+       
+    
   }
 
   BarTouchData get barTouchData => BarTouchData(
@@ -84,28 +93,29 @@ class _BarChartState extends State<_BarChart> {
     String text;
     switch (value.toInt()) {
       case 0: 
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 1:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 2:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 3:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 4:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 5:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       case 6:
-        text =dailyController.dailySales.salesData[1].name; ;
+        text =dailyController.allDailySalesList[0].date;
         break;
       default:
-        text =dailyController.dailySales.salesData[1].name;;       break;
+        text =dailyController.allDailySalesList[0].date;      
+        break;
     }
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -230,14 +240,14 @@ class BarChartSample3 extends StatefulWidget {
 }
 
 class BarChartSample3State extends State<BarChartSample3> {
-DailySalesController dailyController=Get.find();
+
 
 
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    dailyController.getDailySales(DateFormat.yMMMd().format(DateTime.now()));
+  
   }
 
   @override
@@ -245,13 +255,9 @@ DailySalesController dailyController=Get.find();
 
     return  AspectRatio(
       aspectRatio: 1.6,
-      child:Obx((){
-                if(dailyController.isDailyLoading.value||dailyController.dailySales.salesData.isEmpty){
-                  return CircularProgressIndicator();
-                }else{
-                  return _BarChart();
-                }
-              })
+      child:
+                   _BarChart()
+              
     
     
       
