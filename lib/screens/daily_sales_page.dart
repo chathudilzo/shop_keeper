@@ -51,47 +51,49 @@ String date=DateFormat.yMMMd().format(DateTime.now());
                 elevation: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(controller.dailySales.date),
-                      Row(
-                        children: [
-                          Text('Today Total Income: ',style: TextStyle(color: Colors.green,fontSize: 18,fontWeight: FontWeight.bold),),
-                      Text((controller.dailySales.salesData.fold(0.0, (sum, item) => sum+item.itemTotal)).toStringAsFixed(2),style: TextStyle(color: Colors.blueAccent,fontSize: 18,fontWeight: FontWeight.bold),),
-                        ],
-                      ),
-                      DataTable(
-                        dataRowHeight: 60,
-                        columns:[
-                        DataColumn(label: Text('Item')),
-                        DataColumn(label: Column(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(controller.dailySales.date),
+                        Row(
                           children: [
-                            Text('Amount'),
-                            Text('grams/units')
+                            Text('Today Total Income: ',style: TextStyle(color: Colors.green,fontSize: 18,fontWeight: FontWeight.bold),),
+                        Text((controller.dailySales.salesData.fold(0.0, (sum, item) => sum+item.itemTotal)).toStringAsFixed(2),style: TextStyle(color: Colors.blueAccent,fontSize: 18,fontWeight: FontWeight.bold),),
                           ],
-                        )),
-                        DataColumn(label: Text('Income'))
-                      ], rows:[
-                        for(int index=0;index<controller.dailySales.salesData.length;index++)
-                        DataRow(
-                        cells: [
-                          DataCell(Column(
+                        ),
+                        DataTable(
+                          dataRowHeight: 60,
+                          columns:[
+                          DataColumn(label: Text('Item')),
+                          DataColumn(label: Column(
                             children: [
-                              Text(controller.dailySales.salesData[index].name),
-                              //Text('${controller.dailySales.salesData[index].unitPrice==0?'1Kg ':'1U'}'),
-                              Text(controller.dailySales.salesData[index].unitPrice==0?controller.dailySales.salesData[index].kgPrice.toStringAsFixed(2):controller.dailySales.salesData[index].unitPrice.toStringAsFixed(2))
+                              Text('Amount'),
+                              Text('grams/units')
                             ],
                           )),
-                          DataCell(Text(controller.dailySales.salesData[index].buyAmount.toStringAsFixed(2))),
-                          DataCell(Text(controller.dailySales.salesData[index].itemTotal.toStringAsFixed(2)))
-                          ]
-                          )
-                          
-                      ]
-                      )
-                       
-                    ],
+                          DataColumn(label: Text('Income'))
+                        ], rows:[
+                          for(int index=0;index<controller.dailySales.salesData.length;index++)
+                          DataRow(
+                          cells: [
+                            DataCell(Column(
+                              children: [
+                                Text(controller.dailySales.salesData[index].name),
+                                //Text('${controller.dailySales.salesData[index].unitPrice==0?'1Kg ':'1U'}'),
+                                Text(controller.dailySales.salesData[index].unitPrice==0?controller.dailySales.salesData[index].kgPrice.toStringAsFixed(2):controller.dailySales.salesData[index].unitPrice.toStringAsFixed(2))
+                              ],
+                            )),
+                            DataCell(Text(controller.dailySales.salesData[index].buyAmount.toStringAsFixed(2))),
+                            DataCell(Text(controller.dailySales.salesData[index].itemTotal.toStringAsFixed(2)))
+                            ]
+                            )
+                            
+                        ]
+                        )
+                         
+                      ],
+                    ),
                   ),
                 ),
               

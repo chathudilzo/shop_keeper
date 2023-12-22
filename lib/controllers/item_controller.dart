@@ -47,12 +47,14 @@ Future<void>addItem(Item item)async{
 
   }
 
-  Future<void>updateItem(Item item)async{
+  Future<void>updateItem(Item item,int key)async{
     try{
+      print('ITEM KEY'+key.toString());
       final box=await Hive.openBox<Item>('itemBox');
-    Item? existingItem=box.get(item.key);
-
+    Item? existingItem=box.get(key);
+print(box.toMap().keys);
     if(existingItem!=null){
+      print('ItemExists');
       existingItem.name=item.name;
       existingItem.count=item.count;
       existingItem.unitPrice=item.unitPrice;
@@ -61,6 +63,8 @@ Future<void>addItem(Item item)async{
 
       await box.put(existingItem.key, existingItem);
       fetchItems();
+    }else{
+      print('Item doesnot exists');
     }
     }catch(error){
       Get.snackbar('Error', error.toString());
